@@ -7,6 +7,23 @@
   "width": 900,
   "height": 480,
   "projection": {"type": "equalEarth"},
+  "params": [
+    {
+      "name": "circleScale",
+      "value": 1,
+      "bind": {"input": "range", "min": 0.2, "max": 5, "step": 0.1, "name": "Circle Scale: "}
+    },
+    {
+      "name": "fideThreshold",
+      "value": 0,
+      "bind": {"input": "range", "min": 0, "max": 2800, "step": 10, "name": "Min FIDE Avg: "}
+    },
+    {
+      "name": "showCentroids",
+      "value": true,
+      "bind": {"input": "checkbox", "name": "Show Centroids"}
+    }
+  ],
   "layer": [
     {
       "data": {
@@ -14,10 +31,7 @@
         "format": {"type": "topojson", "feature": "countries"}
       },
       "transform": [
-        {
-          "calculate": "datum.properties.name",
-          "as": "Country"
-        },
+        {"calculate": "datum.properties.name", "as": "Country"},
         {
           "lookup": "Country",
           "from": {
@@ -28,7 +42,8 @@
             "key": "Country",
             "fields": ["FIDE Average"]
           }
-        }
+        },
+        {"filter": "datum['FIDE Average'] >= fideThreshold"}
       ],
       "mark": {"type": "geoshape", "stroke": "white", "strokeWidth": 0.5},
       "encoding": {
@@ -49,11 +64,23 @@
         "url": "Chess_Stats_with_Centroids.csv",
         "format": {"type": "csv"}
       },
-      "mark": {"type": "circle", "color": "red", "stroke": "white", "strokeWidth": 0.7,"opacity": 0.3},
+      "transform": [
+        {"filter": "showCentroids"},
+        {
+          "calculate": "datum['% of Women'] * circleScale",
+          "as": "scaled_size"
+        }
+      ],
+      "mark": {"type": "circle", "color": "red", "stroke": "white", "strokeWidth": 0.7, "opacity": 0.3},
       "encoding": {
         "longitude": {"field": "Longitude", "type": "quantitative"},
         "latitude": {"field": "Latitude", "type": "quantitative"},
-        "size": {"field": "% of Women", "type": "quantitative", "title": "% of Women Players", "scale": {"type":"linear", "range":[30,1300]}},
+        "size": {
+          "field": "scaled_size",
+          "type": "quantitative",
+          "title": "% of Women Players",
+          "scale": {"type": "linear", "range": [30, 1300]}
+        },
         "tooltip": [
           {"field": "Country", "type": "nominal"},
           {"field": "Women", "type": "quantitative"},

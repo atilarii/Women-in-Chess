@@ -138,6 +138,62 @@
     // Toggle average age line on titles chart
   });
 </script>
+<script>
+  let mapView, scatterView, pyramidView, titlesView;
+
+  // Map
+  vegaEmbed('#map', 'chess_map.vl.json').then(result => {
+    mapView = result.view;
+  });
+
+  // Scatter
+  vegaEmbed('#scatter', 'chess_scatter.vl.json').then(result => {
+    scatterView = result.view;
+  });
+
+  // Pyramid
+  vegaEmbed('#pyramid', 'chess_pyramid.vl.json').then(result => {
+    pyramidView = result.view;
+  });
+
+  // Titles
+  vegaEmbed('#titles', 'chess_titles.vl.json').then(result => {
+    titlesView = result.view;
+  });
+
+  // --- Dynamic controls ---
+
+//   // Map: change color metric
+//   document.getElementById('map-color').addEventListener('change', e => {
+//     const metric = e.target.value;
+//     if (!mapView) return;
+
+//     // Update color encoding field
+//     mapView.signal('colorMetric', metric).runAsync().catch(console.error);
+//   });
+
+//   // Scatter: highlight top 5
+//   document.getElementById('highlight-top5').addEventListener('change', e => {
+//     if (!scatterView) return;
+//     const show = e.target.checked;
+//     scatterView.signal('highlightTop5', show).runAsync().catch(console.error);
+//   });
+
+//   // Pyramid: filter minimum women
+//   document.getElementById('pyramid-filter').addEventListener('input', e => {
+//     const minWomen = Number(e.target.value);
+//     if (!pyramidView) return;
+//     pyramidView.signal('minWomen', minWomen).runAsync().catch(console.error);
+//   });
+
+//   // Titles: toggle average age line
+//   document.getElementById('show-age').addEventListener('change', e => {
+//     const show = e.target.checked;
+//     if (!titlesView) return;
+//     titlesView.signal('showAvgAge', show).runAsync().catch(console.error);
+//   });
+// </script>
+
 
 </body>
 </html>
