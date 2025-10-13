@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>The Global Chess Landscape</title>
+  <link rel="stylesheet" href="https://unpkg.com/purecss@2.1.0/build/pure-min.css">
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+  <style>
+    body { 
+      font-family: Lato, Arial, sans-serif; 
+      background: #fefefe; 
+      margin: 20px; 
+      color: #111; 
+      line-height: 1.6;
+    }
+    h1 { font-size: 32px; margin-bottom: 20px; text-align: center; color: #222; }
+    h2 { font-size: 24px; margin: 20px 0 10px 0; color: #333; }
+    .description { margin-bottom: 12px; color: #444; }
+    .dashboard { display: flex; gap: 24px; flex-wrap: wrap; }
+    .pane { flex: 1 1 48%; background: #fff; padding: 15px; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); min-width: 400px; }
+    .pane img { width: 100%; max-height: 200px; object-fit: cover; border-radius: 6px; margin-bottom: 12px; }
+    .tabs { display: flex; border-bottom: 1px solid #ccc; margin-bottom: 12px; }
+    .tab { padding: 10px 20px; cursor: pointer; border-radius: 6px 6px 0 0; background: #eee; margin-right: 4px; }
+    .tab.active { background: #fff; border-bottom: 2px solid #4F81BD; font-weight: bold; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .controls { margin-bottom: 12px; }
+    .controls label { margin-right: 10px; }
+  </style>
+</head>
+<body>
+
+<h1>The Global Chess Landscape</h1>
+
+<div class="description">
+  This interactive dashboard allows you to explore global chess statistics with multiple visualisations. 
+  Use the tabs to switch between maps, scatterplots, pyramids, and titled player distributions. 
+  Dynamic filters and controls enhance the exploration of gender, titles, and performance metrics.
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-target="map-pane">World Map</div>
+  <div class="tab" data-target="scatter-pane">Participation vs Performance</div>
+  <div class="tab" data-target="pyramid-pane">Gender Pyramid</div>
+  <div class="tab" data-target="titles-pane">Titled Players & Age</div>
+</div>
+
+<!-- Panes -->
+<div class="dashboard">
+
+  <!-- Map Pane -->
+  <div class="pane tab-content active" id="map-pane">
+    <img src="images/world_chess_banner.jpg" alt="World Chess Illustration">
+    <div class="controls">
+      <label for="map-color">Color by:</label>
+      <select id="map-color">
+        <option value="FIDE Average">Avg FIDE Rating</option>
+        <option value="% of Women">% Women</option>
+      </select>
+    </div>
+    <div id="map" style="height: 450px;"></div>
+    <p class="description">Explore FIDE ratings by country. Circle size = # women; color = chosen metric.</p>
+  </div>
+
+  <!-- Scatter Pane -->
+  <div class="pane tab-content" id="scatter-pane">
+    <img src="images/scatter_chess.jpg" alt="Chess Scatter">
+    <div class="controls">
+      <label><input type="checkbox" id="highlight-top5"> Highlight Top 5 Titled Countries</label>
+    </div>
+    <div id="scatter" style="height: 420px;"></div>
+    <p class="description">Number of players vs average FIDE rating. Color = % women, size = titled players.</p>
+  </div>
+
+  <!-- Pyramid Pane -->
+  <div class="pane tab-content" id="pyramid-pane">
+    <img src="images/pyramid_chess.jpg" alt="Chess Gender Pyramid">
+    <div class="controls">
+      <label for="pyramid-filter">Minimum Women Players:</label>
+      <input type="number" id="pyramid-filter" value="235" min="0">
+    </div>
+    <div id="pyramid" style="height: 700px;"></div>
+    <p class="description">Top 25 countries with largest female player populations. Blue = men, Red = women, Line = % women.</p>
+  </div>
+
+  <!-- Titles Pane -->
+  <div class="pane tab-content" id="titles-pane">
+    <img src="images/titles_chess.jpg" alt="Chess Titles">
+    <div class="controls">
+      <label><input type="checkbox" id="show-age"> Show Avg Age</label>
+    </div>
+    <div id="titles" style="height: 420px;"></div>
+    <p class="description">Stacked bars = number of titled players per country. Line = average age if enabled.</p>
+  </div>
+
+</div>
+
+<script src="chessJavaScript.js"></script>
+
+<script>
+  // Tab navigation
+  const tabs = document.querySelectorAll('.tab');
+  const panes = document.querySelectorAll('.tab-content');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      panes.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.target).classList.add('active');
+    });
+  });
+
+  // Dynamic UI elements
+  document.getElementById('map-color').addEventListener('change', e => {
+    const metric = e.target.value;
+    // You would implement re-render of the map with the chosen color metric
+    console.log("Map color changed to:", metric);
+  });
+
+  document.getElementById('highlight-top5').addEventListener('change', e => {
+    const checked = e.target.checked;
+    console.log("Highlight top 5:", checked);
+    // Implement highlighting on scatter plot
+  });
+
+  document.getElementById('pyramid-filter').addEventListener('input', e => {
+    const minWomen = e.target.value;
+    console.log("Minimum women players filter:", minWomen);
+    // Update pyramid chart
+  });
+
+  document.getElementById('show-age').addEventListener('change', e => {
+    const show = e.target.checked;
+    console.log("Show average age line:", show);
+    // Toggle average age line on titles chart
+  });
+</script>
+
+</body>
+</html>

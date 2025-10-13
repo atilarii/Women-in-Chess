@@ -1,0 +1,65 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "The Global Chess Landscape: Average FIDE Rating",
+    "subtitle": "Country colour = avg FIDE rating; circle size = % women players"
+  },
+  "width": 900,
+  "height": 480,
+  "projection": {"type": "equalEarth"},
+  "layer": [
+    {
+      "data": {
+        "url": "countries-110m.json",
+        "format": {"type": "topojson", "feature": "countries"}
+      },
+      "transform": [
+        {
+          "calculate": "datum.properties.name",
+          "as": "Country"
+        },
+        {
+          "lookup": "Country",
+          "from": {
+            "data": {
+              "url": "chess_stats.csv",
+              "format": {"type": "csv"}
+            },
+            "key": "Country",
+            "fields": ["FIDE Average"]
+          }
+        }
+      ],
+      "mark": {"type": "geoshape", "stroke": "white", "strokeWidth": 0.5},
+      "encoding": {
+        "color": {
+          "field": "FIDE Average",
+          "type": "quantitative",
+          "scale": {"scheme": "viridis"},
+          "title": "Avg FIDE Rating"
+        },
+        "tooltip": [
+          {"field": "Country", "type": "nominal"},
+          {"field": "FIDE Average", "type": "quantitative"}
+        ]
+      }
+    },
+    {
+      "data": {
+        "url": "Chess_Stats_with_Centroids.csv",
+        "format": {"type": "csv"}
+      },
+      "mark": {"type": "circle", "color": "red", "stroke": "white", "strokeWidth": 0.7,"opacity": 0.3},
+      "encoding": {
+        "longitude": {"field": "Longitude", "type": "quantitative"},
+        "latitude": {"field": "Latitude", "type": "quantitative"},
+        "size": {"field": "% of Women", "type": "quantitative", "title": "% of Women Players", "scale": {"type":"linear", "range":[30,1300]}},
+        "tooltip": [
+          {"field": "Country", "type": "nominal"},
+          {"field": "Women", "type": "quantitative"},
+          {"field": "Num Players", "type": "quantitative"}
+        ]
+      }
+    }
+  ]
+}

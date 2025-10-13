@@ -1,0 +1,64 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Gender Distribution by Country Population Pyramid (Top 25 Women Players)",
+    "subtitle": "Compare male vs female registered players; % Women line scaled to fit bars"
+  },
+  "width": 900,
+  "height": 700,
+  "data": {"url": "International_Chess_Stats.csv"},
+  "transform": [
+    {"calculate": "datum['Num Players'] - datum['Women']", "as": "Num_Men"},
+    {
+      "window": [{"op": "rank", "as": "rank"}],
+      "sort": [{"field": "Women","order":"descending"}]
+    },
+    {"filter": "datum['Women'] >= 235"},
+    {"calculate": "-datum.Num_Men", "as": "Neg_Men"},
+    {
+      "calculate": "datum['% of Women'] * 30", 
+      "as": "PctWomenScaled"
+    }
+  ],
+  "layer": [
+    {
+      "mark": {"type": "bar"},
+      "encoding": {
+        "y": {"field": "Country","type":"ordinal","sort":"-y"},
+        "x": {"field": "Neg_Men","type":"quantitative","title":"Number of Players"},
+        "color": {"value":"#4F81BD"},
+        "tooltip": [
+          {"field":"Country","type":"nominal"},
+          {"field":"Num_Men","type":"quantitative","title":"Men"},
+          {"field":"Women","type":"quantitative","title":"Women"},
+          {"field":"% of Women","type":"quantitative","title":"% Women"}
+        ]
+      }
+    },
+    {
+      "mark": {"type": "bar"},
+      "encoding": {
+        "y": {"field":"Country","type":"ordinal","sort":"x"},
+        "x": {"field":"Women","type":"quantitative"},
+        "color":{"value":"#C0504D"},
+        "tooltip": [
+          {"field":"Country","type":"nominal"},
+          {"field":"Num_Men","type":"quantitative","title":"Men"},
+          {"field":"Women","type":"quantitative","title":"Women"},
+          {"field":"% of Women","type":"quantitative","title":"% Women"}
+        ]
+      }
+    },
+    {
+      "mark": {"type": "line","color":"black","point": true},
+      "encoding": {
+        "y": {"field":"Country","type":"ordinal","sort":"-x"},
+        "x": {"field":"PctWomenScaled","type":"quantitative","axis":{"title":"% Women (scaled)"}},
+        "tooltip":[
+          {"field":"Country","type":"nominal"},
+          {"field":"% of Women","type":"quantitative"}
+        ]
+      }
+    }
+  ]
+}

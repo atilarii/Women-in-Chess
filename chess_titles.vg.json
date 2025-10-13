@@ -1,0 +1,51 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Distribution of Titles by Country with Average Age",
+    "subtitle": "Stacked bars: GMs, IMs, FMs, WGMs, WIMs, WFMs; Line: Avg Age (scaled & colored)"
+  },
+  "width": 900,
+  "height": 700,
+  "data": {"url": "International_Chess_Stats.csv"},
+  "transform": [
+    {
+      "calculate": "datum['GMs'] + datum['IMs'] + datum['FMs'] + datum['WGMs'] + datum['WIMs'] + datum['WFMs']",
+      "as": "total_titled"
+    },
+    {"filter": "datum.total_titled > 0"},
+    {"window": [{"op": "rank", "as": "rank"}], "sort": [{"field": "total_titled", "order": "descending"}]},
+    {"filter": "datum.total_titled >= 9999999999"},
+    {"fold": ["GMs","IMs","FMs","WGMs","WIMs","WFMs"], "as": ["title","count"]},
+    {
+      "calculate": "datum['Age Avg'] * 10",
+      "as": "scaled_age"
+    }
+  ],
+  "layer": [
+    {
+      "mark": "bar",
+      "encoding": {
+        "y": {"field": "Country", "type": "ordinal", "sort": "-x", "axis": {"title": "", "labelFontSize": 12}},
+        "x": {"field": "count", "type": "quantitative", "title": "Number of Titled Players"},
+        "color": {"field": "title", "type": "nominal", "title": "Title", "scale": {"scheme": "dark2"}},
+        "tooltip": [
+          {"field": "Country","type":"nominal"},
+          {"field": "title","type":"nominal"},
+          {"field": "count","type":"quantitative"}
+        ]
+      }
+    },
+    {
+      "mark": {"type": "line", "point": true, "strokeWidth": 2},
+      "encoding": {
+        "y": {"field": "Country", "type": "ordinal", "sort": "-x"},
+        "x": {"field": "scaled_age", "type": "quantitative", "axis": {"title": "Average Age (scaled)", "orient": "top"}},
+        "color": {"field": "Age Avg", "type": "quantitative", "title": "Average Age", "scale": {"scheme":"bluepurple"}},
+        "tooltip": [
+          {"field": "Country","type":"nominal"},
+          {"field": "Age Avg","type":"quantitative","title":"Avg Age"}
+        ]
+      }
+    }
+  ]
+}

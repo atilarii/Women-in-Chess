@@ -1,0 +1,32 @@
+{
+  "$schema":"https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {"text":"Participation vs Performance Scatterplot","subtitle":"X: # players; Y: avg FIDE rating; colour = % women; size = titled players"},
+  "width": 900,
+  "height": 420,
+  "data": {"url": "Chess_Stats.csv"},
+  "transform": [
+    {
+      "calculate": "toNumber(datum['GMs']) + toNumber(datum['IMs']) + toNumber(datum['FMs']) + toNumber(datum['WGMs']) + toNumber(datum['WIMs']) + toNumber(datum['WFMs'])",
+      "as": "total_titled"
+    }
+  ],
+  
+  "mark": {"type":"point", "filled": true, "opacity": 0.85, "stroke": "white", "strokeWidth": 0.8},
+  "encoding": {
+    "x": {"field":"Num Players","type":"quantitative","scale":{"type":"log"},"axis":{"title":"Number of Registered Players (log scale)"}},
+    "y": {"field":"FIDE Average","type":"quantitative","axis":{"title":"Average FIDE Rating"},"scale":{"domain":[800, 2400]}},
+    "size": {"field":"total_titled","type":"quantitative","title":"Titled Players","scale":{"range":[30,2000]}},
+    "color": {"field":"% of Women","type":"quantitative","title":"% Women","scale":{"scheme":"magma"}},
+    "tooltip":[
+      {"field":"Country","type":"nominal"},
+      {"field":"Num Players","type":"quantitative"},
+      {"field":"FIDE Average","type":"quantitative"},
+      {"field":"% of Women","type":"quantitative"},
+      {"field":"total_titled","type":"quantitative","title":"Total Titles"}
+    ]
+  },
+  "selection": {
+    "brush": {"type":"interval", "bind":"scales"}
+  }
+}
+
