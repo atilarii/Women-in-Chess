@@ -27,7 +27,7 @@
   "layer": [
     {
       "data": {
-        "url": "./countries-110m.json",
+        "url": "./countries-110m.topojson",
         "format": {"type": "topojson", "feature": "countries"}
       },
       "transform": [
