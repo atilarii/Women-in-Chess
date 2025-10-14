@@ -27,7 +27,7 @@
   "layer": [
     {
       "data": {
-        "url": "./countries-110m.topojson",
+        "url": "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json",
         "format": {"type": "topojson", "feature": "countries"}
       },
       "transform": [
