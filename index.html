@@ -142,22 +142,22 @@
   let mapView, scatterView, pyramidView, titlesView;
 
   // Map
-  vegaEmbed('#map', './chess_map.vl.json').then(result => {
+  vegaEmbed('#map', './chess_map.vg.json').then(result => {
     mapView = result.view;
   });
 
   // Scatter
-  vegaEmbed('#scatter', './chess_scatter.vl.json').then(result => {
+  vegaEmbed('#scatter', './chess_scatter.vg.json').then(result => {
     scatterView = result.view;
   });
 
   // Pyramid
-  vegaEmbed('#pyramid', './chess_pyramid.vl.json').then(result => {
+  vegaEmbed('#pyramid', './chess_pyramid.vg.json').then(result => {
     pyramidView = result.view;
   });
 
   // Titles
-  vegaEmbed('#titles', './chess_titles.vl.json').then(result => {
+  vegaEmbed('#titles', './chess_titles.vg.json').then(result => {
     titlesView = result.view;
   });
 
