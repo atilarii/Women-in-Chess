@@ -27,7 +27,7 @@
   "layer": [
     {
       "data": {
-        "url": "countries-110m.json",
+        "url": "./countries-110m.json",
         "format": {"type": "topojson", "feature": "countries"}
       },
       "transform": [
@@ -36,7 +36,7 @@
           "lookup": "Country",
           "from": {
             "data": {
-              "url": "chess_stats.csv",
+              "url": "./chess_stats.csv",
               "format": {"type": "csv"}
             },
             "key": "Country",
@@ -61,7 +61,7 @@
     },
     {
       "data": {
-        "url": "Chess_Stats_with_Centroids.csv",
+        "url": "./Chess_Stats_with_Centroids.csv",
         "format": {"type": "csv"}
       },
       "transform": [
