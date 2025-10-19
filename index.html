@@ -197,13 +197,19 @@
         <p class="caption">Blue = Men, Red = Women. Black line = % Women (scaled).</p>
       </div>
 
-      <aside class="card reveal" id="pyramid-percentage" aria-label="Countries by Female participation percentage %">
-        <h4 style="margin:0 0 12px 0; color:var(--accent); font-family:'Barlow Condensed',sans-serif;">Top 10 Countries by Female Participation Percentage</h4>
-        <ol class="percentage-list" id="pyramid-list">
-          <li style="opacity:0.5;color:var(--muted)">Loading…</li>
-        </ol>
-        <p class="caption">Countries by % of female registered chess players.</p>
-      </aside>
+      <aside class="card reveal" id="pyramid-chess-facts" aria-label="Chess themed side panel">
+  <h4 style="margin:0 0 12px 0; color:var(--accent); font-family:'Barlow Condensed',sans-serif;">
+    Chess Highlights
+  </h4>
+  <ul class="percentage-list" id="pyramid-facts-list">
+    <li>Top rated female player: Hou Yifan (China)</li>
+    <li>Country with most female WGMs: Russia</li>
+    <li>Fastest rising female player: Polina Shuvalova (Russia)</li>
+    <li>Highest % of women in clubs: Netherlands</li>
+    <li>Youngest female GM: Koneru Humpy (India)</li>
+  </ul>
+  <p class="caption">Top female performers in chess.</p>
+</aside>
     </div>
   </div>
 </section>
@@ -227,17 +233,17 @@
     });
 
     rows.sort((a,b) => b.Women - a.Women);
-    const top10 = rows.slice(0,10);
-    listEl.innerHTML = "";
+    // const top10 = rows.slice(0,10);
+    // listEl.innerHTML = "";
 
-    top10.forEach((r,i) => {
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <span class="rank">#${i+1}</span>
-        <span class="name">${r.Country}</span>
-        <span class="value">${r.Women.toLocaleString()} (${r.PctWomen.toFixed(1)}%)</span>`;
-      listEl.appendChild(li);
-    });
+    // top10.forEach((r,i) => {
+    //   const li = document.createElement("li");
+    //   li.innerHTML = `
+    //     <span class="rank">#${i+1}</span>
+    //     <span class="name">${r.Country}</span>
+    //     <span class="value">${r.Women.toLocaleString()} (${r.PctWomen.toFixed(1)}%)</span>`;
+    //   listEl.appendChild(li);
+    // });
 
     console.info("Gender pyramid and toplist embedded successfully.");
   } catch (err) {
