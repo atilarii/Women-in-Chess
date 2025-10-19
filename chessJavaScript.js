@@ -1,4 +1,6 @@
 // --- Vega specs for multiple visualisations ---
+let mapView, scatterView; // save views for later use
+
 const specs = [
   {id: "#map", url: "chess_map.vg.json"},
   {id: "#scatter", url: "chess_scatter.vg.json"},
@@ -10,7 +12,8 @@ const specs = [
 specs.forEach(s => {
   vegaEmbed(s.id, s.url, {actions:false, renderer:"canvas"})
     .then(res => {
-      if (s.id === "#map") mapView = res.view; // save map view for controls
+      if (s.id === "#map") mapView = res.view; // save map view
+      if (s.id === "#scatter") scatterView = res.view; // save scatter view
     })
     .catch(err => console.error(err));
 });
@@ -42,3 +45,30 @@ async function setMapParam(name, value) {
 showCheckbox.addEventListener("change", async (e) => {
   await setMapParam("showCentroids", e.target.checked);
 });
+
+// Example: highlight countries in scatter plot
+async function highlightScatterCountries(countries) {
+  if (!scatterView) return;
+  await scatterView.signal("highlightCountries", countries).runAsync();
+}
+
+// call the function once after scatter is embedded
+// use setTimeout or wait for the embed to finish
+setTimeout(() => {
+  highlightScatterCountries(["Russia", "India", "USA", "China", "Germany"]);
+}, 500);
+
+async function updateScatter() {
+  
+  const metric = selectMetric.value;
+
+  // set color field
+  await scatterView.signal("colorField", metric).runAsync();
+
+  // top5 highlights
+  const topMetric = toggleTop5Metric.checked ? getTop5(metric) : [];
+  const topTitles = toggleTop5Titles.checked ? getTop5("total_titled") : [];
+  const allHighlighted = Array.from(new Set([...topMetric, ...topTitles]));
+
+  await scatterView.signal("highlightCountries", allHighlighted).runAsync();
+}

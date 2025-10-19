@@ -1,32 +1,62 @@
 {
-  "$schema":"https://vega.github.io/schema/vega-lite/v5.json",
-  "title": {"text":"Participation vs Performance Scatterplot","subtitle":"X: # players; Y: avg FIDE rating; colour = % women; size = titled players"},
-  "width": 900,
-  "height": 420,
-  "data": {"url": "Chess_Stats.csv"},
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Participation vs Performance Scatterplot",
+    "subtitle": "X: # players | Y: avg FIDE rating | Colour = user-selected metric | Size = titled players",
+    "color": "white",
+    "subtitleColor": "white",
+    "fontSize": 18,
+    "subtitleFontSize": 13,
+    "anchor": "start"
+  },
+  "width": 1092,
+  "height": 480,
+  "background": "#26385a",
+  "data": { "url": "data/Chess_Stats.csv" },
   "transform": [
+    { "calculate": "toNumber(datum['Num Players'])", "as": "NumPlayers_num" },
+    { "calculate": "toNumber(datum['FIDE Average'])", "as": "FIDE_Avg_num" },
+    { "calculate": "toNumber(datum['% of Women'])", "as": "PctWomen_num" },
+    { "calculate": "toNumber(datum['Age Avg'])", "as": "Age_Avg_num" },
+    { "calculate": "toNumber(datum['GMs']) + toNumber(datum['IMs']) + toNumber(datum['FMs']) + toNumber(datum['WGMs']) + toNumber(datum['WIMs']) + toNumber(datum['WFMs'])", "as": "total_titled_num" },
+    { "calculate": "isFinite(datum.NumPlayers_num) && datum.NumPlayers_num>0 && isFinite(datum.FIDE_Avg_num)", "as": "validData" },
+    { "calculate": "datum[colorField === '% of Women' ? 'PctWomen_num' : colorField === 'FIDE Average' ? 'FIDE_Avg_num' : 'NumPlayers_num']", "as": "color_metric" }
+  ],
+  "params": [
+      { "name": "colorField", "value": "% of Women" },
+      { "name": "highlightCountries", "value": [] }
+    ],
+  "layer": [
     {
-      "calculate": "toNumber(datum['GMs']) + toNumber(datum['IMs']) + toNumber(datum['FMs']) + toNumber(datum['WGMs']) + toNumber(datum['WIMs']) + toNumber(datum['WFMs'])",
-      "as": "total_titled"
+      "mark": { "type": "point", "filled": true },
+      "encoding": {
+        "x": { "field": "NumPlayers_num", "type": "quantitative", "scale": { "type": "log" }, "axis": { "title": "Number of Registered Players (log scale)", "labelColor": "white", "titleColor": "white", "gridColor": "#444" } },
+        "y": { "field": "FIDE_Avg_num", "type": "quantitative", "scale": { "domain": [800, 2400] }, "axis": { "title": "Average FIDE Rating", "labelColor": "white", "titleColor": "white", "gridColor": "#444" } },
+        "size": { "field": "total_titled_num", "type": "quantitative", "scale": { "range": [30, 2400] }, "title": "Titled Players" },
+        "color": { "field": "color_metric", "type": "quantitative", "scale": { "scheme": "plasma" }, "title": { "signal": "colorField" }, "legend": { "labelColor": "white", "titleColor": "white" } },
+        "opacity": { "condition": { "test": "indexof(highlightCountries, datum.Country) >= 0", "value": 1 }, "value": 0.7 },
+        "stroke": { "condition": { "test": "indexof(highlightCountries, datum.Country) >= 0", "value": "#d9b44a" }, "value": "white" },
+        "strokeWidth": { "condition": { "test": "indexof(highlightCountries, datum.Country) >= 0", "value": 3 }, "value": 0.8 },
+        "tooltip": [
+          { "field": "Country", "type": "nominal" },
+          { "field": "NumPlayers_num", "type": "quantitative", "title": "Num Players" },
+          { "field": "FIDE_Avg_num", "type": "quantitative", "title": "FIDE Avg" },
+          { "field": "PctWomen_num", "type": "quantitative", "title": "% Women" },
+          { "field": "total_titled_num", "type": "quantitative", "title": "Total Titles" }
+        ]
+      },
+      "transform": [{ "filter": "datum.validData" }]
+    },
+    {
+      "mark": { "type": "text", "dy": -30, "fontSize": 12, "fontWeight": "bold", "color": "#d9b44a" },
+      "encoding": {
+        "x": { "field": "NumPlayers_num", "type": "quantitative" },
+        "y": { "field": "FIDE_Avg_num", "type": "quantitative" },
+        "text": { "field": "Country", "type": "nominal" },
+        "opacity": { "condition": { "test": "indexof(highlightCountries, datum.Country) >= 0", "value": 1 }, "value": 0 }
+      },
+      "transform": [{ "filter": "datum.validData" }]
     }
   ],
-  
-  "mark": {"type":"point", "filled": true, "opacity": 0.85, "stroke": "white", "strokeWidth": 0.8},
-  "encoding": {
-    "x": {"field":"Num Players","type":"quantitative","scale":{"type":"log"},"axis":{"title":"Number of Registered Players (log scale)"}},
-    "y": {"field":"FIDE Average","type":"quantitative","axis":{"title":"Average FIDE Rating"},"scale":{"domain":[800, 2400]}},
-    "size": {"field":"total_titled","type":"quantitative","title":"Titled Players","scale":{"range":[30,2000]}},
-    "color": {"field":"% of Women","type":"quantitative","title":"% Women","scale":{"scheme":"magma"}},
-    "tooltip":[
-      {"field":"Country","type":"nominal"},
-      {"field":"Num Players","type":"quantitative"},
-      {"field":"FIDE Average","type":"quantitative"},
-      {"field":"% of Women","type":"quantitative"},
-      {"field":"total_titled","type":"quantitative","title":"Total Titles"}
-    ]
-  },
-  "selection": {
-    "brush": {"type":"interval", "bind":"scales"}
-  }
+  "selection": { "brush": { "type": "interval", "bind": "scales" } }
 }
-

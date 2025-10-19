@@ -109,7 +109,7 @@
       <div style="font-size:12px; color:var(--muted);">Global Chess Demographics</div>
     </div>
     <a href="#map-section" class="nav-link active">Map</a>
-    <a href="#timeline-section" class="nav-link">Performance</a>
+    <a href="#performance-section" class="nav-link">Performance</a>
     <a href="#pyramid-section" class="nav-link">Gender</a>
     <a href="#titles-section" class="nav-link">Titled Players</a>
     <a href="#about-section" class="nav-link">About</a>
@@ -155,6 +155,92 @@
       </div>
     </div>
   </section>
+
+  <!-- Scatter section -->
+  <section id="performance-section" class="section">
+    <div class="container">
+      <div class="title">Participation vs Performance</div>
+      <p class="subtitle">This scatterplot compares chess participation with player demographics.  
+      Each point represents a country - larger circles indicate more titled players,  
+      while color intensity shows either the proportion of female players or the average player age.</p>
+
+
+      <div class="layout">
+        <div class="card reveal" id="scatter-card" role="region" aria-label="Map visualization">
+          <div class="controls" id="scatter-controls">
+            <label for="scatter-select">Size by metric:</label>
+            <select id="scatter-select" aria-label="Select metric for scatter colouring">
+              <option value="% of Women">Percentage of Female Players</option>
+              <option value="Age Avg">Average Player Age</option>
+            </select>
+
+            <label><input type="checkbox" id="reveal-top5"> Highlight Top 5 Titled Countries</label>
+            <label><input type="checkbox" id="highlight-top5"> Highlight Top 5 Countries by Metric</label>
+          </div>
+
+          <div class="viz" id="scatter"><div class="inner" id="scatter-inner"></div></div>
+          <p class="caption">Larger circles = more players.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+  (async function initScatter() {
+    try {
+      const scatterSpec = await fetch("visuals/chess_scatter.vg.json").then(r => r.json());
+      const result = await vegaEmbed("#scatter-inner", scatterSpec, { actions: false, renderer: "svg" });
+      const view = result.view;
+
+      let scatterView = view;
+
+      const selectMetric = document.getElementById("scatter-select");
+      const toggleTop5Metric = document.getElementById("highlight-top5");
+      const toggleTop5Titles = document.getElementById("reveal-top5");
+
+      // load CSV once
+      const data = await loadCSV(STATS_CSV);
+
+      function getTop5(metricField) {
+        const rows = data.map(d => ({
+          ...d,
+          total_titled: (d.GMs||0)+(d.IMs||0)+(d.FMs||0)+(d.WGMs||0)+(d.WIMs||0)+(d.WFMs||0)
+        }));
+        rows.sort((a,b) => ((b[metricField]||b.total_titled||0) - (a[metricField]||a.total_titled||0)));
+        return rows.slice(0,5).map(d=>d.Country);
+      }
+
+      async function updateScatter() {
+        const metricMap = {
+          "% of Women": "PctWomen_num",
+          "Age Avg": "Age_Avg_num"
+        };
+
+        const metric = selectMetric.value;
+        await scatterView.signal("colorField", metric).runAsync();
+
+      // top5 highlights
+      const topMetric = toggleTop5Metric.checked ? getTop5(metric) : [];
+      const topTitles = toggleTop5Titles.checked ? getTop5("total_titled") : [];
+      const allHighlighted = Array.from(new Set([...topMetric, ...topTitles]));
+
+      await scatterView.signal("highlightCountries", allHighlighted).runAsync();
+    }
+      // wire up UI events
+      selectMetric.addEventListener("change", updateScatter);
+      toggleTop5Metric.addEventListener("change", updateScatter);
+      toggleTop5Titles.addEventListener("change", updateScatter);
+
+      // initial render
+      await updateScatter();
+      console.info("Scatter plot controls linked successfully.");
+    } catch (err) {
+      console.error("Failed to embed scatter plot:", err);
+      document.getElementById("scatter-inner").innerText = "Failed to load scatter plot.";
+    }
+  })();
+  </script>
+
 
   <footer class="site-foot">
     Data from KAGGLE and Chess.com. Visualizations created by Edward G. 2025.
@@ -222,7 +308,6 @@ async function loadCSV(url) {
       const obj = {};
       headers.forEach((h,i) => {
         let cell = (cols[i] || "").replace(/^"|"$/g, "");
-        console.log("CELL",h,cell);
         // convert numbers
         const num = Number(cell.replace(/,/g,''));
         obj[h] = (cell === "" ? null : (isNaN(num) ? cell : num));
@@ -427,12 +512,10 @@ async function buildToplist() {
   
   const rows = data.slice();
   for (const r of rows) {
-    console.log("HERE idk",r.Country, r[metric], r);
   }
   rows.sort((a,b) => parseMetricValue(b[metric], metric) - parseMetricValue(a[metric], metric));
 
   for (const r of rows) {
-    console.log("HERE idk",r.Country, r[metric]);
   }
 
   const top = rows.slice(0, TOPLIST_COUNT);
