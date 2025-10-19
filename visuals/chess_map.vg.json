@@ -1,0 +1,139 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "autosize": {"type":"fit","contains":"padding"},
+  "width": 900,
+  "height": 480,
+  "projection": {"type": "equalEarth"},
+  "background": "#0f1720",
+  "title": {
+    "text": "The Global Chess Landscape: By Country",
+    "subtitle": "Country colour = selected metric; circle size = % women players",
+    "color": "#d9b44a",
+    "subtitleColor": "floralwhite",
+    "fontSize": 18,
+    "subtitleFontSize": 12
+  },
+
+  "params": [
+    { "name": "colorField", "value": "FIDE Average" },
+    { "name": "showCentroids", "value": false },
+    {
+      "name": "percentileThreshold",
+      "value": 0.0,
+      "bind": {
+        "input": "range",
+        "min": 0,
+        "max": 99,
+        "step": 1,
+        "name": "Min Percentile (metric): "
+      }
+    },
+    {
+      "name": "centroidSize",
+      "value": 0.2,
+      "bind": {
+        "input": "range",
+        "min": 0.2,
+        "max": 3,
+        "step": 0.1,
+        "name": "Centroid Scale: "
+      }
+    }
+  ],
+
+  "layer": [
+    {
+      "data": {
+        "url": "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json",
+        "format": { "type": "topojson", "feature": "countries" }
+      },
+      "transform": [
+        { "calculate": "datum.properties.name", "as": "Country" },
+        {
+          "lookup": "Country",
+          "from": {
+            "data": { "url": "data/Chess_Stats.csv", "format": { "type": "csv" } },
+            "key": "Country",
+            "fields": ["FIDE Average", "% of Women", "Num Players"]
+          }
+        },
+        {
+          "calculate": "toNumber(datum[colorField])",
+          "as": "metricVal"
+        },
+        {
+          "window": [
+            {"op": "percent_rank", "field": "metricVal", "as": "metricPercentile"}
+          ],
+          "sort": [{"field": "metricVal", "order": "ascending"}]
+        },
+        {
+          "calculate": "datum.metricPercentile",
+          "as": "metricPercentileAdjusted"
+        },
+        { "filter": "datum.metricVal != null && datum.metricPercentileAdjusted >= percentileThreshold/100" }
+      ],
+      "mark": {"type": "geoshape", "stroke": "#1f2937", "strokeWidth": 0.5},
+      "encoding": {
+        "color": {
+          "field": "metricVal",
+          "type": "quantitative",
+          "scale": {"scheme": "viridis" },
+          "title": { "signal": "colorField" }
+        },
+        "tooltip": [
+          {"field":"Country","type":"nominal"},
+          {"field":"FIDE Average","type":"quantitative"},
+          {"field":"% of Women","type":"quantitative"},
+          {"field":"Num Players","type":"quantitative"}
+        ]
+      }
+    },
+
+    {
+      "data": {
+        "url": "data/Chess_Stats_with_Centroids.csv",
+        "format": {"type":"csv"}
+      },
+      "transform": [
+        { "filter": "datum['% of Women'] != null" }
+      ],
+      "mark": { "type": "circle", "filled": true, "stroke": "#1f2937", "strokeWidth": 0.6 },
+      "encoding": {
+        "longitude": {"field":"Longitude","type":"quantitative"},
+        "latitude": {"field":"Latitude","type":"quantitative"},
+        "size": {
+          "field": "% of Women",
+          "type": "quantitative",
+          "scale": {
+            "range": [
+              {"signal": "5 * centroidSize"},
+              {"signal": "1200 * centroidSize"}
+            ]
+          },
+          "legend": {
+            "title": "% Women (scaled area)",
+            "labelColor": "white",
+            "titleColor": "white"
+          }
+        },
+        "opacity": {
+          "condition": { "test": "showCentroids", "value": 0.7 },
+          "value": 0
+        },
+        "tooltip": [
+          {"field":"Country","type":"nominal"},
+          {"field":"Women","type":"quantitative"},
+          {"field":"% of Women","type":"quantitative"},
+          {"field":"Num Players","type":"quantitative"}
+        ]
+      }
+    }
+  ],
+
+  "config": {
+    "view": {"stroke": "transparent"},
+    "title": {"fontSize": 16},
+    "legend": {"labelFontSize": 12, "titleFontSize": 13, "labelColor": "white", "titleColor": "white"}
+  }
+}
