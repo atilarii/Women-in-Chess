@@ -3,8 +3,8 @@
   "title": {
     "text": "Participation vs Performance Scatterplot",
     "subtitle": "X: # players | Y: avg FIDE rating | Colour = user-selected metric | Size = titled players",
-    "color": "white",
-    "subtitleColor": "white",
+    "color": "#d9b44a",
+    "subtitleColor": "floralwhite",
     "fontSize": 18,
     "subtitleFontSize": 13,
     "anchor": "start"

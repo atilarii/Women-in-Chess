@@ -185,6 +185,68 @@
     </div>
   </section>
 
+  <!-- Pyramid section -->
+<section id="pyramid-section" class="section">
+  <div class="container">
+    <div class="title">Gender Distribution Pyramid</div>
+    <p class="subtitle">Visualizing male vs female registered players for the top 25 countries by female participation. The % Women line is scaled to fit the bars.</p>
+
+    <div class="layout">
+      <div class="card reveal" id="pyramid-card" role="region" aria-label="Gender pyramid visualization">
+        <div class="viz" id="pyramid"><div class="inner" id="pyramid-inner"></div></div>
+        <p class="caption">Blue = Men, Red = Women. Black line = % Women (scaled).</p>
+      </div>
+
+      <aside class="card reveal" id="pyramid-percentage" aria-label="Countries by Female participation percentage %">
+        <h4 style="margin:0 0 12px 0; color:var(--accent); font-family:'Barlow Condensed',sans-serif;">Top 10 Countries by Female Participation Percentage</h4>
+        <ol class="percentage-list" id="pyramid-list">
+          <li style="opacity:0.5;color:var(--muted)">Loading…</li>
+        </ol>
+        <p class="caption">Countries by % of female registered chess players.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<script>
+(async function initPyramid() {
+  try {
+    const pyramidSpec = await fetch("visuals/chess_pyramid.vg.json").then(r => r.json());
+    const result = await vegaEmbed("#pyramid-inner", pyramidSpec, { actions: false, renderer: "svg" });
+    const pyramidView = result.view;
+
+    const listEl = document.getElementById("pyramid-list");
+    const data = await fetch("data/Chess_Stats.csv").then(r => r.text());
+    const rows = data.trim().split(/\r?\n/).slice(1).map(r => {
+      const cells = r.split(",");
+      return {
+        Country: cells[0],
+        Women: Number(cells[2]),
+        PctWomen: Number(cells[3])
+      };
+    });
+
+    rows.sort((a,b) => b.Women - a.Women);
+    const top10 = rows.slice(0,10);
+    listEl.innerHTML = "";
+
+    top10.forEach((r,i) => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span class="rank">#${i+1}</span>
+        <span class="name">${r.Country}</span>
+        <span class="value">${r.Women.toLocaleString()} (${r.PctWomen.toFixed(1)}%)</span>`;
+      listEl.appendChild(li);
+    });
+
+    console.info("Gender pyramid and toplist embedded successfully.");
+  } catch (err) {
+    console.error("Failed to embed gender pyramid:", err);
+    document.getElementById("pyramid-inner").innerText = "Failed to load pyramid.";
+  }
+})();
+</script>
+
   <script>
   (async function initScatter() {
     try {
