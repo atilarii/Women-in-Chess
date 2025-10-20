@@ -34,7 +34,7 @@
         "y": { "field": "FIDE_Avg_num", "type": "quantitative", "scale": { "domain": [800, 2400] }, "axis": { "title": "Average FIDE Rating", "labelColor": "white", "titleColor": "white", "gridColor": "#444" } },
         "size": { "field": "total_titled_num", "type": "quantitative", "scale": { "range": [30, 2400] }, "title": "Titled Players" },
         "color": { "field": "color_metric", "type": "quantitative", "scale": { "scheme": "plasma" }, "title": { "signal": "colorField" }, "legend": { "labelColor": "white", "titleColor": "white" } },
-        "opacity": { "condition": { "test": "indexof(highlightCountries, datum.Country) >= 0", "value": 1 }, "value": 0.7 },
+        "opacity": { "condition": { "test": "indexof(highlightCountries, datum.Country) >= 0", "value": 1 }, "value": 0.8 },
         "stroke": { "condition": { "test": "indexof(highlightCountries, datum.Country) >= 0", "value": "#d9b44a" }, "value": "white" },
         "strokeWidth": { "condition": { "test": "indexof(highlightCountries, datum.Country) >= 0", "value": 3 }, "value": 0.8 },
         "tooltip": [

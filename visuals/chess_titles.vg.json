@@ -1,51 +1,172 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": {
-    "text": "Distribution of Titles by Country with Average Age",
-    "subtitle": "Stacked bars: GMs, IMs, FMs, WGMs, WIMs, WFMs; Line: Avg Age (scaled & colored)"
+    "text": "Chess Titles by Country and Average Player Age",
+    "subtitle": "Stacked bars show title composition; gold line shows average player age; right bar shows % of Women's Titles vs Men's",
+    "color": "white",
+    "subtitleColor": "#ccc",
+    "anchor": "start",
+    "fontSize": 20,
+    "subtitleFontSize": 13
   },
-  "width": 900,
-  "height": 700,
-  "data": {"url": "International_Chess_Stats.csv"},
+  "background": "#0f1720",
+  "data": { "url": "data/International_Chess_Stats.csv" },
+
   "transform": [
     {
       "calculate": "datum['GMs'] + datum['IMs'] + datum['FMs'] + datum['WGMs'] + datum['WIMs'] + datum['WFMs']",
       "as": "total_titled"
     },
-    {"filter": "datum.total_titled > 0"},
-    {"window": [{"op": "rank", "as": "rank"}], "sort": [{"field": "total_titled", "order": "descending"}]},
-    {"filter": "datum.total_titled >= 9999999999"},
-    {"fold": ["GMs","IMs","FMs","WGMs","WIMs","WFMs"], "as": ["title","count"]},
     {
-      "calculate": "datum['Age Avg'] * 10",
-      "as": "scaled_age"
+      "calculate": "datum['WGMs'] + datum['WIMs'] + datum['WFMs']",
+      "as": "female_titles"
+    },
+    {
+      "calculate": "datum['GMs'] + datum['IMs'] + datum['FMs']",
+      "as": "male_titles"
+    },
+    {
+      "calculate": "datum.male_titles > 0 ? datum.female_titles / datum.male_titles : 0",
+      "as": "female_to_male_ratio"
+    },
+    { "filter": "datum.total_titled > 0" },
+    {
+      "window": [{ "op": "rank", "as": "rank" }],
+      "sort": [{ "field": "total_titled", "order": "descending" }]
+    },
+    { "filter": "datum.rank <= 25" },
+    {
+      "fold": ["FMs", "IMs", "GMs", "WFMs", "WIMs", "WGMs"],
+      "as": ["title", "count"]
     }
   ],
-  "layer": [
+
+  "hconcat": [
     {
-      "mark": "bar",
+      "width": 950,
+      "height": 650,
+      "layer": [
+        {
+      "mark": {
+        "type": "bar",
+        "cornerRadiusTopLeft": 3,
+        "cornerRadiusTopRight": 3
+      },
       "encoding": {
-        "y": {"field": "Country", "type": "ordinal", "sort": "-x", "axis": {"title": "", "labelFontSize": 12}},
-        "x": {"field": "count", "type": "quantitative", "title": "Number of Titled Players"},
-        "color": {"field": "title", "type": "nominal", "title": "Title", "scale": {"scheme": "dark2"}},
+        "y": {
+          "field": "Country",
+          "type": "ordinal",
+          "sort": "-x",
+          "axis": {
+            "title": "",
+            "labelColor": "white",
+            "labelFontSize": 12,
+            "ticks": false
+          }
+        },
+        "x": {
+          "aggregate": "sum",
+          "field": "count",
+          "type": "quantitative",
+          "title": "Number of Titled Players",
+          "axis": { "labelColor": "white", "titleColor": "white", "gridColor": "#333" },
+          "scale": { "zero": true }
+        },
+        "color": {
+          "field": "title",
+          "type": "nominal",
+          "title": "Title Type",
+          "scale": {
+            "domain": ["GMs", "IMs", "FMs", "WIMs", "WGMs","WFMs"],
+            "range": ["#FFD700", "#C0C0C0", "#CD7F32", "#ff99cc", "#ffb3e6", "#ffcce6"]
+          },
+          "legend": {
+            "labelColor": "white",
+            "titleColor": "white"
+          }
+        },
         "tooltip": [
-          {"field": "Country","type":"nominal"},
-          {"field": "title","type":"nominal"},
-          {"field": "count","type":"quantitative"}
+          { "field": "Country", "type": "nominal" },
+          { "field": "title", "type": "nominal", "title": "Title" },
+          { "field": "count", "type": "quantitative", "title": "Players" }
         ]
       }
     },
+        {
+        "mark": {
+          "type": "line",
+          "color": "#FFD700",
+          "strokeWidth": 3,
+          "point": { "filled": true, "color": "#FFD700", "size": 80 }
+        },
+        "encoding": {
+          "y": {
+            "field": "Country",
+            "type": "ordinal",
+            "sort": "-x"
+          },
+          "x": {
+            "field": "Age Avg",
+            "type": "quantitative",
+            "axis": {
+              "orient": "top",
+              "title": "Average Age",
+              "labelColor": "#FFD700",
+              "titleColor": "#FFD700",
+              "grid": false
+            },
+            "scale": { "domain": [20, 60] }
+          },
+          "tooltip": [
+            { "field": "Country", "type": "nominal" },
+            { "field": "Age Avg", "type": "quantitative", "title": "Average Age" }
+          ]
+        }
+      }
+      ],
+      "resolve": { "scale": { "x": "independent" } }
+    },
+
     {
-      "mark": {"type": "line", "point": true, "strokeWidth": 2},
+      "width": 80,
+      "height": 650,
+      "mark": "rect",
       "encoding": {
-        "y": {"field": "Country", "type": "ordinal", "sort": "-x"},
-        "x": {"field": "scaled_age", "type": "quantitative", "axis": {"title": "Average Age (scaled)", "orient": "top"}},
-        "color": {"field": "Age Avg", "type": "quantitative", "title": "Average Age", "scale": {"scheme":"bluepurple"}},
+        "y": {
+          "field": "Country",
+          "type": "ordinal",
+          "sort": {"field": "total_titled", "order": "descending"},
+          "axis": null
+        },
+        "color": {
+          "field": "female_to_male_ratio",
+          "type": "quantitative",
+          "title": "% Women Titles vs Men",
+          "scale": {
+            "domain": [0, 0.3],
+            "range": ["#222", "#b84dff"]
+          },
+          "legend": {
+            "title": "% Women/Men",
+            "labelColor": "white",
+            "titleColor": "white"
+          }
+        },
         "tooltip": [
-          {"field": "Country","type":"nominal"},
-          {"field": "Age Avg","type":"quantitative","title":"Avg Age"}
+          { "field": "Country", "type": "nominal" },
+          {
+            "field": "female_to_male_ratio",
+            "type": "quantitative",
+            "title": "% Women Titles vs Men",
+            "format": ".0%"
+          }
         ]
       }
     }
-  ]
+  ],
+
+  "config": {
+    "axis": { "domainColor": "#555", "gridColor": "#333" },
+    "legend": { "labelFontSize": 12, "titleFontSize": 13 }
+  }
 }

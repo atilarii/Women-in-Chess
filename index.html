@@ -95,8 +95,11 @@
     .caption { color: var(--muted); font-size: 13px; margin-top: 8px; }
     footer.site-foot { padding: 40px 0; text-align: center; color: var(--muted); font-size: 13px; }
 
-    .reveal { opacity: 0; transform: translateY(18px) scale(0.995); transition: all 0.6s cubic-bezier(.2,.9,.3,1); will-change: transform, opacity; }
+    .reveal { opacity: 0; transform: translateY(18px) scale(0.695); transition: all 1.5s cubic-bezier(.2,.9,.3,1); will-change: transform, opacity; }
     .reveal.visible { opacity: 1; transform: translateY(0) scale(1); }
+    html {
+      scroll-behavior: smooth;
+    }
 
     @media (max-width: 720px) { .nav { padding-left: 14px; padding-right: 14px; } .hero h1 { font-size: 28px; } body { padding-top: 64px; } }
   </style>
@@ -187,33 +190,80 @@
   </section>
 
   <!-- Pyramid section -->
-<section id="pyramid-section" class="section">
-  <div class="container">
-    <div class="title">Gender Distribution Pyramid</div>
-    <p class="subtitle">Visualizing male vs female registered players for the top 25 countries by female participation. The % Women line is scaled to fit the bars.</p>
+  <section id="pyramid-section" class="section">
+    <div class="container">
+      <div class="title">Gender Distribution Pyramid</div>
+      <p class="subtitle">Visualizing male vs female registered players for the top 25 countries by female participation. The % Women line is scaled to fit the bars.</p>
 
-    <div class="layout">
-      <div class="card reveal" id="pyramid-card" role="region" aria-label="Gender pyramid visualization">
-        <div class="viz" id="pyramid"><div class="inner" id="pyramid-inner"></div></div>
-        <p class="caption">Blue = Men, Red = Women. Black line = % Women (scaled).</p>
+      <div class="layout">
+        <div class="card reveal" id="pyramid-card" role="region" aria-label="Gender pyramid visualization">
+          <div class="viz" id="pyramid"><div class="inner" id="pyramid-inner"></div></div>
+          <p class="caption">Blue = Men, Red = Women. Black line = % Women (scaled).</p>
+        </div>
+
+        <aside class="card reveal" id="pyramid-chess-facts" aria-label="Chess themed side panel">
+    <h4 style="margin:0 0 12px 0; color:var(--accent); font-family:'Barlow Condensed',sans-serif;">
+      Chess Highlights
+    </h4>
+    <ul class="percentage-list" id="pyramid-facts-list">
+      <li>Top rated female player: Hou Yifan (China)</li>
+      <li>Country with most female WGMs: Russia</li>
+      <li>Fastest rising female player: Polina Shuvalova (Russia)</li>
+      <li>Highest % of women in clubs: Netherlands</li>
+      <li>Youngest female GM: Koneru Humpy (India)</li>
+    </ul>
+    <p class="caption">Top female performers in chess.</p>
+  </aside>
       </div>
-
-      <aside class="card reveal" id="pyramid-chess-facts" aria-label="Chess themed side panel">
-  <h4 style="margin:0 0 12px 0; color:var(--accent); font-family:'Barlow Condensed',sans-serif;">
-    Chess Highlights
-  </h4>
-  <ul class="percentage-list" id="pyramid-facts-list">
-    <li>Top rated female player: Hou Yifan (China)</li>
-    <li>Country with most female WGMs: Russia</li>
-    <li>Fastest rising female player: Polina Shuvalova (Russia)</li>
-    <li>Highest % of women in clubs: Netherlands</li>
-    <li>Youngest female GM: Koneru Humpy (India)</li>
-  </ul>
-  <p class="caption">Top female performers in chess.</p>
-</aside>
     </div>
-  </div>
-</section>
+  </section>
+
+  <!-- Titles section -->
+  <section id="titles-section" class="section">
+    <div class="container">
+      <div class="title">Distribution of Titles by Country</div>
+      <p class="subtitle">
+        Showing how Grandmasters (GMs), International Masters (IMs), and other titles are distributed by country, 
+        with a line showing the average player age (scaled for clarity).
+      </p>
+
+      <div class="layout">
+        <div class="card reveal" id="titles-card" role="region" aria-label="Titled players visualization">
+          <div class="viz" id="titles"><div class="inner" id="titles-inner"></div></div>
+          <p class="caption">
+            Stacked bars = number of titled players by title type.  
+            Line = average player age (scaled ×10).
+          </p>
+        </div>
+
+        <aside class="card reveal" id="titles-side" aria-label="Titled player facts">
+          <h4 style="margin:0 0 12px 0; color:var(--accent); font-family:'Barlow Condensed',sans-serif;">
+            Did You Know?
+          </h4>
+          <ul class="percentage-list" id="titles-facts-list">
+            <li>Russia and India lead in total titled players.</li>
+            <li>China’s titled players are among the youngest on average.</li>
+            <li>Europe dominates the GM count, but Asia is catching up fast.</li>
+            <li>Countries with younger titled players often have stronger youth programs.</li>
+          </ul>
+          <p class="caption">Source: FIDE data, 2025.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+<script>
+(async function initTitles() {
+  try {
+    const titlesSpec = await fetch("visuals/chess_titles.vg.json").then(r => r.json());
+    const result = await vegaEmbed("#titles-inner", titlesSpec, { actions: false, renderer: "svg" });
+    console.info("Titled players visualization loaded successfully.");
+  } catch (err) {
+    console.error("Failed to embed titled players visualization:", err);
+    document.getElementById("titles-inner").innerText = "Failed to load titled players visualization.";
+  }
+})();
+</script>
 
 <script>
 (async function initPyramid() {
