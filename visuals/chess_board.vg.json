@@ -1,0 +1,61 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Chessboard with a sample position, name, and date",
+  "width": 320,
+  "height": 320,
+  "background":"#0f1720",
+  "layer": [
+    {
+      "data": {
+        "values": [
+          {"x":0,"y":0},{"x":1,"y":0},{"x":2,"y":0},{"x":3,"y":0},{"x":4,"y":0},{"x":5,"y":0},{"x":6,"y":0},{"x":7,"y":0},
+          {"x":0,"y":1},{"x":1,"y":1},{"x":2,"y":1},{"x":3,"y":1},{"x":4,"y":1},{"x":5,"y":1},{"x":6,"y":1},{"x":7,"y":1},
+          {"x":0,"y":2},{"x":1,"y":2},{"x":2,"y":2},{"x":3,"y":2},{"x":4,"y":2},{"x":5,"y":2},{"x":6,"y":2},{"x":7,"y":2},
+          {"x":0,"y":3},{"x":1,"y":3},{"x":2,"y":3},{"x":3,"y":3},{"x":4,"y":3},{"x":5,"y":3},{"x":6,"y":3},{"x":7,"y":3},
+          {"x":0,"y":4},{"x":1,"y":4},{"x":2,"y":4},{"x":3,"y":4},{"x":4,"y":4},{"x":5,"y":4},{"x":6,"y":4},{"x":7,"y":4},
+          {"x":0,"y":5},{"x":1,"y":5},{"x":2,"y":5},{"x":3,"y":5},{"x":4,"y":5},{"x":5,"y":5},{"x":6,"y":5},{"x":7,"y":5},
+          {"x":0,"y":6},{"x":1,"y":6},{"x":2,"y":6},{"x":3,"y":6},{"x":4,"y":6},{"x":5,"y":6},{"x":6,"y":6},{"x":7,"y":6},
+          {"x":0,"y":7},{"x":1,"y":7},{"x":2,"y":7},{"x":3,"y":7},{"x":4,"y":7},{"x":5,"y":7},{"x":6,"y":7},{"x":7,"y":7}
+        ]
+      },
+      "mark": "rect",
+      "encoding": {
+        "x": {"field": "x", "type": "ordinal"},
+        "y": {"field": "y", "type": "ordinal"},
+        "color": {
+          "condition": {
+            "test": "datum.x % 2 == datum.y % 2",
+            "value": "#f0d9b5"
+          },
+          "value": "#b58863"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {"x":4,"y":4,"piece":"♔"},{"x":3,"y":3,"piece":"♚"},{"x":2,"y":5,"piece":"♞"} 
+        ]
+      },
+      "mark": {"type":"text","align":"center","baseline":"middle","fontSize":28},
+      "encoding": {
+        "x":{"field":"x","type":"ordinal"},
+        "y":{"field":"y","type":"ordinal"},
+        "text":{"field":"piece","type":"nominal"},
+        "color":{"value":"black"}
+      }
+    },
+    {
+      "mark":{"type":"text","x":160,"y":-10,"align":"center","fontSize":14,"fontWeight":"bold"},
+      "encoding":{
+        "text":{"value":"Edward Griffith"}
+      }
+    },
+    {
+      "mark":{"type":"text","x":160,"y":330,"align":"center","fontSize":12,"fontStyle":"italic"},
+      "encoding":{
+        "text":{"value":"21 Oct 2025"}
+      }
+    }
+  ]
+}

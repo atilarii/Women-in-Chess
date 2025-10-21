@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>The Global Chess Landscape — Revamped</title>
+  <title>The Global Chess Landscape</title>
 
   <!-- Vega -->
   <script src="https://cdn.jsdelivr.net/npm/vega@5.32.0/build/vega.min.js"></script>
@@ -129,8 +129,11 @@
   <section id="map-section" class="section">
     <div class="container">
       <div class="title">Mapping the Chess World</div>
-      <p class="subtitle">Colour shows the selected metric, circle size represents female participation. Use controls to explore different views.</p>
-
+      <p class="subtitle">
+        Colour shows the selected metric while circle size represents female participation. 
+        Countries with brighter shades often reflect stronger chess culture or performance. 
+        Hover over countries to see insights about their top players and female participation.
+      </p>
       <div class="layout">
         <div class="card reveal" id="map-card" role="region" aria-label="Map visualization">
           <div class="controls" id="map-controls">
@@ -166,13 +169,13 @@
       <div class="title">Participation vs Performance</div>
       <p class="subtitle">This scatterplot compares chess participation with player demographics.  
       Each point represents a country - larger circles indicate more titled players,  
-      while color intensity shows either the proportion of female players or the average player age.</p>
+      while colour intensity shows either the proportion of female players or the average player age.</p>
 
 
       <div class="layout">
         <div class="card reveal" id="scatter-card" role="region" aria-label="Map visualization">
           <div class="controls" id="scatter-controls">
-            <label for="scatter-select">Size by metric:</label>
+            <label for="scatter-select">Colour by metric:</label>
             <select id="scatter-select" aria-label="Select metric for scatter colouring">
               <option value="% of Women">Percentage of Female Players</option>
               <option value="Age Avg">Average Player Age</option>
@@ -218,52 +221,191 @@
     </div>
   </section>
 
-  <!-- Titles section -->
-  <section id="titles-section" class="section">
-    <div class="container">
-      <div class="title">Distribution of Titles by Country</div>
-      <p class="subtitle">
-        Showing how Grandmasters (GMs), International Masters (IMs), and other titles are distributed by country, 
-        with a line showing the average player age (scaled for clarity).
-      </p>
+<!-- Titles section -->
+<section id="titles-section" class="section">
+  <div class="container">
+    <div class="title">Distribution of Titles by Country</div>
+    <p class="subtitle">
+      Showing how Grandmasters (GMs), International Masters (IMs), and other titles are distributed by country. 
+      Right panel shows a selectable metric via colour.
+    </p>
 
-      <div class="layout">
-        <div class="card reveal" id="titles-card" role="region" aria-label="Titled players visualization">
-          <div class="viz" id="titles"><div class="inner" id="titles-inner"></div></div>
-          <p class="caption">
-            Stacked bars = number of titled players by title type.  
-            Line = average player age (scaled ×10).
-          </p>
-        </div>
+    <!-- Controls -->
+    <div class="controls" id="title-controls">
+      <div style="margin-bottom:12px; color:white;">
+        <label for="num-countries">Show top:</label>
+        <select id="num-countries">
+          <option value="10">10 countries</option>
+          <option value="15">15 countries</option>
+          <option value="20" selected>20 countries</option>
+          <option value="25">25 countries</option>
+          <option value="30">30 countries</option>
+        </select>
 
-        <aside class="card reveal" id="titles-side" aria-label="Titled player facts">
-          <h4 style="margin:0 0 12px 0; color:var(--accent); font-family:'Barlow Condensed',sans-serif;">
-            Did You Know?
-          </h4>
-          <ul class="percentage-list" id="titles-facts-list">
-            <li>Russia and India lead in total titled players.</li>
-            <li>China’s titled players are among the youngest on average.</li>
-            <li>Europe dominates the GM count, but Asia is catching up fast.</li>
-            <li>Countries with younger titled players often have stronger youth programs.</li>
-          </ul>
-          <p class="caption">Source: FIDE data, 2025.</p>
-        </aside>
+        <label for="color-metric" style="margin-left:16px;">Colour metric:</label>
+        <select id="color-metric">
+          <option value="female_to_male_ratio" selected>% Women/Men</option>
+          <option value="female_titles">Female Titles</option>
+          <option value="male_titles">Male Titles</option>
+          <option value="Age Avg">Average Age</option>
+        </select>
       </div>
+
+    <div class="layout">
+      <div class="card reveal" id="titles-card" role="region" aria-label="Titled players visualization">
+        <div class="viz" id="titles"><div class="inner" id="titles-inner"></div></div>
+        <p class="caption">
+          Stacked bars = number of titled players by title type.  
+          Colour = selected metric.
+        </p>
+      </div>
+
+      <aside class="card reveal" id="titles-side" aria-label="Titled player facts">
+        <h4 style="margin:0 0 12px 0; color:var(--accent); font-family:'Barlow Condensed',sans-serif;">
+          Did You Know?
+        </h4>
+        <ul class="percentage-list" id="titles-facts-list">
+          <li>Russia and India lead in total titled players.</li>
+          <li>China’s titled players are among the youngest on average.</li>
+          <li>Europe dominates the GM count, but Asia is catching up fast.</li>
+          <li>Countries with younger titled players often have stronger youth programs.</li>
+        </ul>
+        <p class="caption">Source: FIDE data, 2025.</p>
+      </aside>
     </div>
-  </section>
+  </div>
+</section>
+<!-- About section -->
+<section id="about-section" class="section" style="padding-top: 100px;">
+  <div class="container">
+    <div class="title">About This Project ♟️</div>
+    <p class="subtitle">
+      This visualization explores global chess participation, titled players, and gender distribution. It was designed with a chess motif, inspired by the strategic layout of the board and the movement of pieces.
+    </p>
+    <p class="subtitle">
+      All data is sourced from publicly available repositories and databases:
+    </p>
+    <ul style="list-style: none; padding-left: 0; color: var(--muted); font-size: 14px;">
+      <li>♔ <a href="https://www.kaggle.com/datasets/deepcontractor/international-chess-statistics-2022" target="_blank">Kaggle Chess Statistics</a></li>
+      <li>♕ <a href="https://www.chess.com/ratings" target="_blank">Chess.com Global Player Data</a></li>
+      <li>♗ <a href="https://ratings.fide.com/top_lists.phtml?list=open" target="_blank">FIDE Official Ratings & Titles</a></li>
+    </ul>
+    <p class="subtitle">
+      Visualizations created by Edward G., 2025. Inspired by the chessboard’s hierarchy and color-coded piece dynamics.
+    </p>
+
+    <!-- Chessboard Container -->
+<div id="chessboard" class="card reveal" style="margin-top: 20px; display: flex; justify-content: center;"></div>
+
+<!-- Vega & Vega-Lite Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
 
 <script>
-(async function initTitles() {
+(async function renderChessboard() {
+  try {
+    // Fetch the external Vega JSON spec
+    const spec = await fetch("visuals/chess_board.vg.json").then(r => r.json());
+
+    // Make the board bigger
+    spec.width = 480;   // increased from 320
+    spec.height = 480;
+
+    // Optional: adjust font size for pieces
+    if (spec.layer) {
+      spec.layer.forEach(l => {
+        if (l.mark?.type === "text") {
+          l.mark.fontSize = 36; // bigger piece symbols
+        }
+      });
+    }
+
+    // Embed
+    vegaEmbed('#chessboard', spec, { actions: false, renderer: 'svg' });
+  } catch (err) {
+    console.error("Failed to render chessboard:", err);
+    document.getElementById("chessboard").innerText = "Failed to load chessboard.";
+  }
+})();
+</script>
+<script>
+async function renderTitles(numCountries = 25, colorMetric = "female_to_male_ratio") {
   try {
     const titlesSpec = await fetch("visuals/chess_titles.vg.json").then(r => r.json());
-    const result = await vegaEmbed("#titles-inner", titlesSpec, { actions: false, renderer: "svg" });
-    console.info("Titled players visualization loaded successfully.");
+
+    // Remove the average age line
+    if (titlesSpec.hconcat && titlesSpec.hconcat[0].layer) {
+      titlesSpec.hconcat[0].layer = titlesSpec.hconcat[0].layer.filter(l => !(l.mark && l.mark.type === "line"));
+    }
+
+    // Update top-N filter
+    titlesSpec.transform = titlesSpec.transform.map(t => {
+      if (t.rank !== undefined || (t.filter && t.filter.includes("datum.rank"))) {
+        return {
+          ...t,
+          filter: `datum.total_titled > 0 && datum.rank <= ${numCountries}`
+        };
+      }
+      return t;
+    });
+
+    // Update color metric calculation
+    titlesSpec.transform = titlesSpec.transform.map(t => {
+      if (t.calculate && t.as === "validData") {
+        return {
+          ...t,
+          calculate: `isFinite(datum["${colorMetric}"]) ? datum["${colorMetric}"] : null`
+        };
+      }
+      return t;
+    });
+
+    // Define color schemes for different metrics
+    const colorSchemes = {
+      "female_to_male_ratio": { domain: [0, 0.5], range: ["#1a1a2e", "#ff1493"] }, // Pink
+      "female_titles": { domain: null, range: ["#1a1a2e", "#ff69b4"] }, // Pink
+      "male_titles": { domain: null, range: ["#1a1a2e", "#4169e1"] }, // Blue
+      "Age Avg": { domain: [20, 50], range: ["#1a1a2e", "#ffd700"] } // Gold
+    };
+
+    // Update rect mark color encoding
+    if (titlesSpec.hconcat && titlesSpec.hconcat[1]) {
+      const scheme = colorSchemes[colorMetric] || { domain: null, range: ["#222", "#b84dff"] };
+      titlesSpec.hconcat[1].encoding.color.scale = scheme;
+    }
+
+    // Enable smooth animation
+    titlesSpec.encoding = titlesSpec.encoding || {};
+    titlesSpec.encoding.x = { ...titlesSpec.encoding.x, axis: { ...titlesSpec.encoding?.x?.axis }, animate: { enter: { duration: 500 }, update: { duration: 500 } } };
+    titlesSpec.encoding.color = { ...titlesSpec.encoding?.color, animate: { enter: { duration: 500 }, update: { duration: 500 } } };
+
+    // Clear previous visualization
+    document.getElementById("titles-inner").innerHTML = "";
+
+    // Render
+    await vegaEmbed("#titles-inner", titlesSpec, { actions: false, renderer: "svg" });
+    console.info(`Visualization loaded: top ${numCountries} countries, color metric = ${colorMetric}`);
   } catch (err) {
     console.error("Failed to embed titled players visualization:", err);
     document.getElementById("titles-inner").innerText = "Failed to load titled players visualization.";
   }
-})();
+}
+
+// Initial render
+const numCountriesSelect = document.getElementById("num-countries");
+const colorMetricSelect = document.getElementById("color-metric");
+
+renderTitles(numCountriesSelect.value, colorMetricSelect.value);
+
+// Update on any dropdown change
+[numCountriesSelect, colorMetricSelect].forEach(el => {
+  el.addEventListener("change", () => {
+    renderTitles(numCountriesSelect.value, colorMetricSelect.value);
+  });
+});
 </script>
+
 
 <script>
 (async function initPyramid() {
